@@ -1,0 +1,188 @@
+<html>
+    <head>
+        <title>時計 | MSNIC CLOCK</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css?<?php echo(date('YmdHis'));?>">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    </head>
+    <body>
+        <header>
+            <div class="hamburger-menu">
+                <input type="checkbox" id="menu-btn-check">
+                <label for="menu-btn-check" class="menu-btn"><span></span></label>
+            </div>
+            <nav id="menu">
+                <ul>
+                    <li><a id="lightmode">Light mode</a></li>
+                    <li><a id="darkmode">Dark mode</a></li>
+                </ul>
+            </nav>
+        </header>
+        <div class="sprash open" id="sprash">
+            <p id="sprashText">Loading...</p>
+        </div>
+        <div class="wrap">
+            <div class="clock">
+                <div class="date">
+                    <span id="yyyy"></span><span id="yyyys"></span><span id="mm"></span><span id="mms"></span><span id="dd"></span><span id="dds"></span>
+                    <span id="weeksb"></span><span id="week"></span><span id="weeksa"></span>
+                </div>
+                <span id="h">12</span> <span class="sep"></span>
+                <span id="i">34</span> <span class="sep"></span>
+                <span id="s">56</span>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+        <script>
+            //Time Elements
+            const h = document.getElementById('h');
+            const i = document.getElementById('i');
+            const s = document.getElementById('s');
+            const p = document.querySelectorAll('.sep');
+            
+            //Date Elements
+            const dy = document.getElementById('yyyy');
+            const dm = document.getElementById('mm');
+            const dd = document.getElementById('dd');
+            const dw = document.getElementById('week');
+            //(Date Separators)
+            const sy = document.getElementById('yyyys');
+            const sm = document.getElementById('mms');
+            const sd = document.getElementById('dds');
+            const sb = document.getElementById('weeksb');//Weeks before
+            const sa = document.getElementById('weeksa');//Weeks after
+            //Week
+            const weeks = ["日","月","火","水","木","金","土"];
+
+            let count = 0;
+            let buffer = 0;
+            //=========================================
+            //Functions
+            function getTime(){
+                let clock = new Date();
+                let H = clock.getHours();
+                if(H<10){
+                    H = "0"+H;
+                }
+                let M = clock.getMinutes();
+                if(M<10){
+                    M = "0"+M;
+                }
+                let S = clock.getSeconds();
+                if(S<10){
+                    S = "0"+S;
+                }
+                //let S = clock.getTime()%1000
+                h.innerHTML = H;
+                i.innerHTML = M;
+                s.innerHTML = S;
+                p.forEach((data)=>{
+                    //span = data.querySelector('.sep');
+                    data.innerHTML = localStorage.getItem('ts')
+                })
+            }
+
+            function getDate(){
+                let date = new Date();
+                let y = date.getFullYear();
+                let m = date.getMonth();
+                if(m<10){
+                    m = "0"+m;
+                }
+                let d = date.getDate();
+                if(d<10){
+                    d = "0"+d;
+                }
+                let w = date.getDay();
+                dy.innerHTML = y;
+                dm.innerHTML = m;
+                dd.innerHTML = d;
+                dw.innerHTML = weeks[w];
+                sy.innerHTML = localStorage.getItem('ds1');
+                sm.innerHTML = localStorage.getItem('ds2');
+                sd.innerHTML = localStorage.getItem('ds3');
+                sb.innerHTML = localStorage.getItem('ds4');
+                sa.innerHTML = localStorage.getItem('ds5');
+            }
+            
+            function toggleSeparator(){
+                sec = new Date().getTime()%1000;
+                if((sec / 500)<1){
+                    p.forEach((data)=>{
+                        data.classList.remove('off')
+                    })
+                }else{
+                    p.forEach((data)=>{
+                        data.classList.add('off');
+                    })
+                }
+            }
+            function init(){
+                //Check Local Storage
+                if(localStorage.getItem('initialized')==undefined){
+                    //Initialize
+                    //Time Sep type = :
+                    localStorage.setItem('ts',':');
+                    //Date Sep Type(Y=>M=>D=>WB=>WA)
+                    localStorage.setItem('ds1','年');
+                    localStorage.setItem('ds2','月');
+                    localStorage.setItem('ds3','日');
+                    localStorage.setItem('ds4','');
+                    localStorage.setItem('ds5','曜日');
+                    //Color theme = light is default.
+                    localStorage.setItem('theme','light');
+                    //Complete
+                    localStorage.setItem('initialized','yes');
+                    window.alert("Setup is complete. System will reload this page.");
+                    location.reload();
+                }
+                if(localStorage.getItem('theme')=="dark"){
+                    document.body.classList.add('darkMode');
+                }
+                setTimeout(()=>{
+                    document.getElementById('sprash').classList.replace('open',"end");
+                },1000)
+                
+            }
+            //==============================
+            //Main
+
+            window.addEventListener('load',()=>{
+                init()
+                //Main routine
+                clockLoop = setInterval(()=>{
+                    getTime();
+                    getDate();
+                    toggleSeparator();
+                },1);
+            })
+
+            //Click events
+            document.getElementById('menu-btn-check').onclick = ()=>{
+                if(document.getElementById('menu-btn-check').checked){
+                    document.getElementById('menu').classList.add('open')
+                }else{
+                    document.getElementById('menu').classList.remove('open')
+                }
+            }
+            document.getElementById('lightmode').onclick = ()=>{
+                document.body.classList.remove('darkMode');
+                localStorage.setItem('theme',"white")
+            }
+
+            document.getElementById('darkmode').onclick = ()=>{
+                document.body.classList.add('darkMode');
+                localStorage.setItem('theme',"dark")
+            }
+            $.post('/api/weather/getWeather.php',{},(data)=>{
+                $.post("/api/locate/returnLC.php",{"ln":"佐賀県"},data=>{
+                    $.post("/api/weather/getNow.php",{"cx":data.coordX,"cy":data.coordY},data=>{
+                        Weather = data.Feature[0].Property.WeatherList.Weather[0];
+                        
+                    })
+                })
+            })
+        </script>
+    </body>
+</html>

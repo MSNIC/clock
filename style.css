@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Noto+Sans+JP&display=swap');
+
+@font-face {
+    font-family: "Noto Sans Mono CJK JP";
+    font-weight: 400;
+    src: local("NotoSansMonoCJKjp-Regular"),
+        local("Noto Sans Mono CJK JP Regular"),
+        url("https://cdn.jsdelivr.net/npm/@japanese-monospaced-fonts/noto-sans-mono-cjk-jp@1.0.1/NotoSansMonoCJKJP-Regular.otf.otf") format("opentype");
+}
+
+:root{
+    --color: #f2f6fc;
+    --hov-color: #f0f0f0;
+    --rev-color: #000000;
+}
+
+.darkMode{
+    --color: #222222;
+    --hov-color: #2f2f2f;
+    --rev-color: #1da6fc;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: var(--color);
+    color: var(--rev-color);
+    font-family: 'Noto Sans Mono CJK JP';
+    width: 100vw;
+    height: 100vh;
+    transition: all .4s ease-in-out;
+    overflow: hidden;
+}
+
+.hamburger-menu { 
+    display: initial;
+    cursor: pointer;
+}
+#menu-btn-check{
+    visibility: hidden;
+}
+.menu-btn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    height: 60px;
+    width: 60px;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+    background-color: unset;
+    cursor: pointer;
+}
+.menu-btn span, .menu-btn span:before, .menu-btn span:after {
+    content: '';
+    display: block;
+    height: 3px;
+    width: 25px;
+    border-radius: 3px;
+    background-color: var(--rev-color);
+    position: absolute;
+    cursor: pointer;
+}
+.menu-btn span:before {
+    bottom: 8px;
+}
+.menu-btn span:after {
+    top: 8px;
+}
+#menu-btn-check:checked ~ .menu-btn span {
+    background-color: rgba(255, 255, 255, 0);
+}
+#menu-btn-check:checked ~ .menu-btn span::before {
+    bottom: 0;
+    transform: rotate(45deg);
+}
+#menu-btn-check:checked ~ .menu-btn span::after {
+    top: 0;
+    transform: rotate(-45deg);
+}
+
+header{
+    display: block;
+    position: absolute;
+    top: 0;
+}
+
+.wrap{
+    width: 100vw;
+    height: 100vh;
+}
+
+.clock{
+    width: fit-content;
+    position: relative;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 600%;
+    transition: all .4s ease-in-out;
+
+    margin: 0 auto;
+}
+
+.date{
+    position: relative;
+    font-size: 1rem;
+    text-align: left;
+    top: 18px;
+}
+
+nav{
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 65px;
+    right: 5px;
+    width: fit-content;
+    height: fit-content;
+    background-color: var(--color);
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0 0 0 / .3);
+    visibility: hidden;
+    transition: background .4s ease-in-out;
+}
+nav.open{
+    visibility: visible;
+    transition: all .4s ease-in-out;
+}
+
+ul{
+    list-style: none;
+}
+
+li{
+    padding: 5px 10px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 5px 5px 0 0;
+}
+
+li:hover{
+    background-color: var(--hov-color);
+    transition: all .1s ease-in-out;
+}
+
+li:nth-last-of-type(1){
+    border-radius: 0 0 5px 5px;
+}
+
+.sprash{
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 91;
+    background-color: #2f2f2f;
+    color: #1da6fc;
+}
+
+.sprash p{
+    position: relative;
+    width: fit-content;
+    margin: 0 auto;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.sprash.end{
+    animation: ending-sprash .4s ease-out forwards;
+}
+
+@keyframes ending-sprash{
+    0%{
+        opacity: 1;
+        visibility: visible;
+    }
+    100%{
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.sep.off{
+    opacity: 0;
+}
